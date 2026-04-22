@@ -1,0 +1,51 @@
+2. DOKUMENTUM: FRISSÍTETT FEJLESZTŐI SPECIFIKÁCIÓ (v1.1)
+1. Áttekintés
+A Növényfelismerő Gyakorló egy magyar nyelvű webalkalmazás, amely segít a parkgondozó tanulóknak az 50 kötelező növény felismerésében.
+
+2. Funkcionális követelmények
+2.1 Növény-lista (Magyar nevekkel)
+Az alkalmazás az alábbi listát használja:
+
+
+Egynyáriak és kétnyáriak (10 db): Bojtocska, Kerti oroszlánszáj, Mindignyíló begónia, Kerti petúnia, Kis büdöske, Kerti árvácska, Százszorszép, Havasi nefelejcs, Paprikavirág, Rézvirág .
+
+
+Évelők (15 db): Közönséges cickafark, Őszirózsa, Vaskoslevelű bőrlevél, Közönséges levendula, Kerti bazsarózsa, Árnyékliliom, Gyöngyvirág, Kerti nőszirom, Házi kövirózsa, Pompás varjúháj, Indás ínfű, Kis meténg, Kánna, Széleslevelű gyékény, Tulipán .
+
+
+Lombhullató fák és cserjék (15 db): Korai juhar, Vadgesztenye, Közönséges nyír, Nyári orgona, Húsos som, Aranyfa, Borostyán, Tapadó vadszőlő, Juharlevelű platán, Kocsányos tölgy, Fehér akác, Vadrózsa, Közönséges orgona, Ezüsthárs, Kínai lilaakác .
+
+
+Örökzöldek (5 db): Kolorádófenyő, Közönséges puszpáng, Közönséges lucfenyő, Feketefenyő, Közönséges tiszafa .
+
+
+Dézsás/Cserepes dísznövények (2 db): Leander, Zöldike.
+
+Gyomnövények (3 db): Pongyola pitypang, Parlagfű, Nagy útifű.
+
+2.2 Képforrás stratégia
+Mivel a képek nem állnak rendelkezésre helyben, a fejlesztőnek az alábbiak közül kell választania:
+
+Wikimedia Commons integráció: A növény latin neve alapján (ami a háttérben tárolva van) lekér egy publikus fotót.
+
+Statikus URL lista: A JSON-ben minden növényhez tartozik egy manuálisan vagy AI által gyűjtött biztos kép-link.
+
+Fallback: Ha nincs kép, egyértelmű hibaüzenet vagy egy "Kép betöltése..." felirat jelenik meg.
+
+2.3 Kvíz működése
+
+Csak a magyar nevek jelennek meg a gombokon.
+
+A rendszer véletlenszerűen választ 3 rossz választ a listából, ügyelve arra, hogy a helyes válasz ne ismétlődjön meg.
+
+A diák azonnali vizuális visszajelzést kap (helyes/helytelen).
+
+3. Technikai adatszerkezet
+TypeScript
+interface Plant {
+  id: number;
+  hungarianName: string; // Ezt látja a diák
+  latinName: string;      // Ez kell a képkereséshez
+  category: string;
+  imageUrl: string;      // Külső link
+}

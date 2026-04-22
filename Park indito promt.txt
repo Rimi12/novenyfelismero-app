@@ -1,0 +1,28 @@
+1. DOKUMENTUM: FRISSÍTETT INDÍTÓ PROMPT (v1.1)
+Prompt:
+
+Építsd meg a „Növényfelismerő Gyakorló” miniapp MVP verzióját.
+
+A mellékelt specifikáció (v1.1) a forrásigazság. Kiemelt kérés: Kizárólag a növények magyar nevét használd a felületen és a kvízben is.
+
+Fontos megkötések:
+
+Technológia: Single-page webapp (React + TypeScript + Tailwind CSS).
+
+Adatkezelés: 50 növény adatait egy fix JSON listában tárold.
+
+Képkezelés: Mivel nincsenek saját képek, az alkalmazásnak dinamikusan kell képeket megjelenítenie. Ehhez használj egy olyan logikát, ami a https://commons.wikimedia.org/ API-ján keresztül vagy egy előre meghatározott képlista alapján dolgozik. Ha ez túl komplex az MVP-hez, akkor használj egy placeholder képszolgáltatást (pl. https://loremflickr.com/800/600/flower,plant), de a kódban legyen egyértelműen elkülönítve a képek forrása, hogy később fix URL-ekre cserélhessük őket.
+
+Logika: * 50 kérdéses sorozat.
+
+4 magyar nyelvű válaszlehetőség.
+
+A rossz válaszok (distractors) véletlenszerűen kerüljenek ki a többi növény magyar neve közül.
+
+Először röviden foglald össze:
+
+Hogyan oldod meg a képek behívását külső forrásból?
+
+Hogyan biztosítod, hogy a válaszlehetőségek között ne legyen átfedés?
+
+Ezután készítsd el az MVP-t. A felület legyen magyar nyelvű, mobilbarát és letisztult.

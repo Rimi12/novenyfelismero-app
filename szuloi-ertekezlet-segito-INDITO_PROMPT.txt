@@ -1,0 +1,35 @@
+Az alábbi prompt mellé dobd be az AI kódoló eszköznek a szuloi-ertekezlet-segito-SPEC-v1.0 file-t, amiben a miniapp részletes specifikációja van. Figyelem! Ez a prompt nem fog lekódolni mindent a specifikációból, csak a legszükségesebb dolgokat.
+
+
+
+\----------------------
+
+
+
+Építsd meg a „Szülői értekezlet segítő” miniapp MVP verzióját.
+
+A mellékelt specifikáció a funkcionális forrásigazság. Kövesd azt pontosan, ne találj ki extra funkciókat, és ne bővítsd túl a scope-ot.
+
+Fontos megkötések:
+
+* single-page webapp
+* React + TypeScript + Tailwind CSS
+* nincs backend
+* nincs adatbázis
+* nincs belépés
+* nincs valódi email-küldés
+* nincs külső AI API
+* az adatok helyben tárolhatók localStorage-ben
+* a generált értesítő és összefoglaló legyen szabály- vagy sablonalapú, ne külső modellből jöjjön
+
+Először röviden foglald össze:
+
+1. mit fogsz megépíteni,
+2. milyen fő nézetekből áll majd,
+3. milyen adatstruktúrát használsz,
+4. hogyan oldod meg a mentést és a letöltést.
+
+Ezután készítsd el az MVP-t.
+
+A felület legyen magyar nyelvű, letisztult, nyugodt és áttekinthető. A cél egy valóban használható adminisztratív segédalkalmazás, nem demó-trükk vagy látványprojekt.
+
