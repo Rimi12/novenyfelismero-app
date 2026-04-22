@@ -21,12 +21,13 @@ A telepítés után a terminált újra kell indítani, hogy felismerje a `node` 
 - [x] `git remote add origin https://github.com/Rimi12/novenyfelismero-app.git`
 - [x] Első push elvégzése.
 
-## 4. Megvalósított Funkciók (MVP v1.1)
-- **Adatbázis**: 50 növény magyar és latin névvel, kategóriákba sorolva (`src/data/plants.json`).
-- **Dinamikus Képek**: A `loremflickr` API segítségével a latin nevek alapján töltődnek be a fotók.
+## 4. Megvalósított Funkciók (MVP v1.2)
+- **Adatbázis**: 50 növény magyar és latin névvel.
+- **Tudományos Képbetöltés (ÚJ)**: A **Wikipedia API**-t használjuk a latin nevek alapján, ami botanikailag pontos és változatos fotókat ad vissza.
+- **Okos Fallback**: Ha a Wikipedia-n nincs kép, a program visszavált a `loremflickr`-re, de egyedi azonosítót (lock/seed) használ, így elkerüli a képek ismétlődését.
 - **Kvíz Logika**: 
   - Véletlenszerű kérdéssorrend minden indításnál.
-  - Egyedi (átfedés mentes) válaszlehetőségek generálása.
+  - Egyedi válaszlehetőségek generálása.
   - Azonnali vizuális visszajelzés (Helyes/Helytelen).
   - Százalékos haladásjelző és pontszám követés.
 - **Design**: Prémium botanikai esztétika, üveghatású (glassmorphism) kártyák és sima animációk.
