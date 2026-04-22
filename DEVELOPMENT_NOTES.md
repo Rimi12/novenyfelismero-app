@@ -21,12 +21,11 @@ A telepítés után a terminált újra kell indítani, hogy felismerje a `node` 
 - [x] `git remote add origin https://github.com/Rimi12/novenyfelismero-app.git`
 - [x] Első push elvégzése.
 
-## 4. Megvalósított Funkciók (MVP v1.3)
-- **Teljes Adatbázis**: A `növények.docx` összes növénye bekerült (120+ tétel), magyar és latin nevekkel.
-- **Vizsga-generáló Logika**: A kvíz mostantól pontosan követi a vizsgakövetelményeket minden indításkor:
-  - 10 egynyári, 15 évelő, 15 lombhullató, 5 örökzöld, 2 dézsás, 3 gyom.
-- **Dinamikus Képbetöltés**: Wikipedia API alapú tudományos fotók.
-- **Újragenerálás**: Bármikor kérhető új vizsgasor a "Vizsgasor újragenerálása" gombbal.
+## 4. Megvalósított Funkciók (MVP v1.4 - Képhitelességi Frissítés)
+- **Tudományosan Hiteles Képek**: A `loremflickr` (véletlenszerű képek) véglegesen eltávolításra került.
+- **Többszintű Keresés**: A program mostantól 3 szinten keres hiteles fotót: EN Wikipedia -> HU Wikipedia -> Wikimedia Commons tárhely.
+- **Esztétikus Fallback**: Ha egyik forrás sem ad találatot, egy professzionális helyőrző grafika jelenik meg a növény nevével, elkerülve a téves információkat.
+- **Forrásmegjelölés**: A képek sarkában diszkréten megjelenik a forrás (Wikimedia / Wikipedia).
 
 ## 5. Teendők az otthoni gépen
 1. **Szinkronizálás**: `git pull origin main` (hogy az új adatbázis és logika letöltődjön).
