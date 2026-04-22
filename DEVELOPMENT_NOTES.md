@@ -15,13 +15,27 @@ A telepítés után a terminált újra kell indítani, hogy felismerje a `node` 
 - **Folyamat**: Mivel a mappa nem volt üres, egy ideiglenes mappát használtunk a generáláshoz, majd a fájlokat bemásoltuk a projekt gyökerébe.
 - **Tailwind v4**: A legújabb v4 verziót használtuk, amely nem igényel külön technikai konfigurációs fájlokat a Vite plugin (@tailwindcss/vite) használata mellett.
 
-## 3. GitHub Összekötés (Folyamatban)
-- [ ] Üres repository létrehozása a GitHubon.
-- [/] Git inicializálása helyben.
-- [ ] `git remote add origin <URL>` futtatása.
-- [ ] Első push elvégzése.
+## 3. GitHub Összekötés (Kész)
+- [x] Üres repository létrehozása a GitHubon.
+- [x] Git inicializálása helyben.
+- [x] `git remote add origin https://github.com/Rimi12/novenyfelismero-app.git`
+- [x] Első push elvégzése.
 
-## 4. Specifikációk
-- **Forrás**: `Park spec.txt` (v1.1) alapján dolgozunk.
-- **Különleges kérés**: Csak magyar nevek a felületen, latin nevek a háttérben a képkereséshez.
-- **Képforrás**: `loremflickr.com` dinamikus eléréssel.
+## 4. Megvalósított Funkciók (MVP v1.1)
+- **Adatbázis**: 50 növény magyar és latin névvel, kategóriákba sorolva (`src/data/plants.json`).
+- **Dinamikus Képek**: A `loremflickr` API segítségével a latin nevek alapján töltődnek be a fotók.
+- **Kvíz Logika**: 
+  - Véletlenszerű kérdéssorrend minden indításnál.
+  - Egyedi (átfedés mentes) válaszlehetőségek generálása.
+  - Azonnali vizuális visszajelzés (Helyes/Helytelen).
+  - Százalékos haladásjelző és pontszám követés.
+- **Design**: Prémium botanikai esztétika, üveghatású (glassmorphism) kártyák és sima animációk.
+
+## 5. Teendők az otthoni gépen
+1. **Repository letöltése**: 
+   `git clone https://github.com/Rimi12/novenyfelismero-app.git`
+2. **Függőségek telepítése**: 
+   `npm install`
+3. **Indítás**: 
+   `npm run dev`
+4. **Fejlesztés folytatása**: Bármilyen kódbeli változtatást elvégzel, ne felejtsd el a `git push` parancsot a végén!
