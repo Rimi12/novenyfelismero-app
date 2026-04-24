@@ -14,7 +14,11 @@ interface Question {
   options: string[];
 }
 
-const Quiz: React.FC = () => {
+interface QuizProps {
+  source: 'wiki' | 'local';
+}
+
+const Quiz: React.FC<QuizProps> = ({ source }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -160,6 +164,7 @@ const Quiz: React.FC = () => {
         <PlantImage 
           latinName={currentQuestion.correctPlant.latinName} 
           hungarianName={currentQuestion.correctPlant.hungarianName} 
+          source={source}
         />
         
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
