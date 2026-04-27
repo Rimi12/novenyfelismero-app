@@ -1,13 +1,21 @@
 import { useState } from 'react';
 import Quiz from './components/Quiz';
+import WrittenQuiz from './components/WrittenQuiz';
+import TeacherPanel from './components/TeacherPanel';
+
+type AppMode = 'selection' | 'quiz' | 'written' | 'teacher';
 
 function App() {
-  const [started, setStarted] = useState(false);
+  const [mode, setMode] = useState<AppMode>('selection');
   const [quizSource, setQuizSource] = useState<'wiki' | 'local'>('wiki');
 
-  const handleStart = (source: 'wiki' | 'local') => {
+  const startQuiz = (source: 'wiki' | 'local') => {
     setQuizSource(source);
-    setStarted(true);
+    setMode('quiz');
+  };
+
+  const startWritten = () => {
+    setMode('written');
   };
 
   return (
@@ -23,33 +31,34 @@ function App() {
               Növényfelismerő <span className="text-green-600">Gyakorló</span>
             </h1>
           </div>
-          {started && (
+          {mode !== 'selection' && (
             <button 
-              onClick={() => window.location.reload()}
+              onClick={() => setMode('selection')}
               className="text-sm font-bold text-green-700 hover:text-green-900 transition-colors"
             >
-              Kilépés
+              Vissza a főmenübe
             </button>
           )}
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 pt-8">
-        {!started ? (
-          <div className="mt-12 md:mt-16 text-center animate-slide-up">
+        {mode === 'selection' && (
+          <div className="mt-8 md:mt-12 text-center animate-slide-up">
             <div className="mb-6 inline-block p-4 bg-green-100 rounded-full text-green-700 text-5xl">
               🌱
             </div>
             <h2 className="text-4xl md:text-5xl font-extrabold text-green-900 mb-6 leading-tight">
-              Készen állsz a <br />parkgondozó vizsgára?
+              Miben segíthetek ma?
             </h2>
             <p className="text-lg text-green-700/80 mb-12 max-w-lg mx-auto">
-              Válaszd ki a tanulási módot és kezdd el a felkészülést!
+              Válaszd ki a számodra legmegfelelőbb tanulási vagy vizsgázási formát!
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {/* Gyakorló Mód */}
               <button
-                onClick={() => handleStart('wiki')}
+                onClick={() => startQuiz('wiki')}
                 className="group p-8 bg-white rounded-3xl shadow-xl border-2 border-transparent hover:border-green-500 transition-all hover:scale-105 text-left"
               >
                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🌐</div>
@@ -62,43 +71,63 @@ function App() {
                 </div>
               </button>
 
+              {/* Vizsga Mód (Feleletválasztós) */}
               <button
-                onClick={() => handleStart('local')}
+                onClick={() => startQuiz('local')}
                 className="group p-8 bg-green-600 rounded-3xl shadow-xl border-2 border-transparent hover:border-green-400 transition-all hover:scale-105 text-left text-white"
               >
                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">📸</div>
                 <h3 className="text-2xl font-bold mb-2">Vizsga Mód</h3>
                 <p className="text-white/70 text-sm">
-                  Valós fotók használata. A vizsgán előforduló 50 kötelező növény felismeréséhez.
+                  Valós fotók használata. Feleletválasztós teszt az 50 kötelező növényből.
                 </p>
                 <div className="mt-6 flex items-center text-white font-bold text-sm">
                   INDÍTÁS <span className="ml-2 group-hover:ml-4 transition-all">→</span>
                 </div>
               </button>
+
+              {/* Írásbeli Vizsga */}
+              <button
+                onClick={startWritten}
+                className="group p-8 bg-white rounded-3xl shadow-xl border-2 border-transparent hover:border-blue-500 transition-all hover:scale-105 text-left md:col-span-2"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">✍️</div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Írásbeli Vizsga</h3>
+                    <p className="text-slate-500 text-sm">
+                      Névvel ellátott, gépelős vizsga. A válaszaidat a tanár fogja javítani az adatbázisban.
+                    </p>
+                  </div>
+                  <div className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    Új funkció
+                  </div>
+                </div>
+                <div className="mt-6 flex items-center text-blue-600 font-bold text-sm">
+                  VIZSGA MEGKEZDÉSE <span className="ml-2 group-hover:ml-4 transition-all">→</span>
+                </div>
+              </button>
             </div>
 
-            <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 opacity-40">
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-green-50">
-                <div className="text-2xl mb-2">🇭🇺</div>
-                <div className="text-sm font-bold">Magyar Nevek</div>
-              </div>
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-green-50">
-                <div className="text-2xl mb-2">⚡</div>
-                <div className="text-sm font-bold">Azonnali Visszajelzés</div>
-              </div>
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-green-50">
-                <div className="text-2xl mb-2">🎯</div>
-                <div className="text-sm font-bold">Arányos Sorsolás</div>
-              </div>
+            <div className="mt-16 flex flex-wrap justify-center gap-4 opacity-40">
+               <button 
+                onClick={() => setMode('teacher')}
+                className="p-4 bg-white rounded-2xl shadow-sm border border-green-50 hover:opacity-100 transition-opacity"
+               >
+                  <div className="text-2xl mb-2">👨‍🏫</div>
+                  <div className="text-sm font-bold">Tanári Belépés</div>
+               </button>
             </div>
           </div>
-        ) : (
-          <Quiz source={quizSource} />
         )}
+
+        {mode === 'quiz' && <Quiz source={quizSource} />}
+        {mode === 'written' && <WrittenQuiz />}
+        {mode === 'teacher' && <TeacherPanel />}
       </main>
 
       <footer className="mt-20 text-center text-green-900/30 text-sm italic">
-        © 2026 Növényfelismerő Gyakorló MVP v1.1
+        © 2026 Növényfelismerő Gyakorló v2.0 | Supabase Edition
       </footer>
     </div>
   );
