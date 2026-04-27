@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import plantsData from '../data/plants.json';
 import PlantImage from './PlantImage';
 import { supabase } from '../lib/supabase';
