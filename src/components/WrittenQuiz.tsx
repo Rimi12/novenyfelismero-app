@@ -97,9 +97,9 @@ const WrittenQuiz: React.FC = () => {
 
       if (error) throw error;
       setIsFinished(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error submitting quiz:', err);
-      alert('Hiba történt a beküldés során. Kérlek szólj a tanárodnak!');
+      alert(`Hiba történt a beküldés során: ${err.message || 'Ismeretlen hiba'}. Kérlek szólj a tanárodnak!`);
     } finally {
       setIsSubmitting(false);
     }
