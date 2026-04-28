@@ -154,13 +154,6 @@ const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, sourc
             alt={hungarianName} 
             className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
           />
-          
-          <div className="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
-            <div className="inline-block bg-black/50 backdrop-blur-md px-6 py-3 rounded-2xl">
-              <h3 className="text-white text-2xl font-black tracking-wide">{hungarianName}</h3>
-              <p className="text-white/70 italic mt-1">{latinName}</p>
-            </div>
-          </div>
         </div>,
         document.body
       )}
