@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface PlantImageProps {
   latinName: string;
@@ -20,6 +21,7 @@ const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, sourc
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isLocal, setIsLocal] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -100,40 +102,71 @@ const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, sourc
   }, [latinName, hungarianName, source]);
 
   return (
-    <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 shadow-inner flex items-center justify-center border border-slate-200">
-      {loading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm z-10">
-          <div className="w-10 h-10 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
-          <p className="mt-4 text-green-800 text-sm font-bold tracking-wide animate-pulse uppercase">Kép betöltése...</p>
-        </div>
-      )}
+    <>
+      <div className="relative w-full h-full min-h-[150px] aspect-video rounded-2xl overflow-hidden bg-slate-100 shadow-inner flex items-center justify-center border border-slate-200">
+        {loading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm z-10">
+            <div className="w-10 h-10 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
+            <p className="mt-4 text-green-800 text-sm font-bold tracking-wide animate-pulse uppercase">Kép betöltése...</p>
+          </div>
+        )}
 
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={hungarianName}
-          className={`w-full h-full object-cover transition-all duration-1000 ${loading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'}`}
-          onLoad={() => setLoading(false)}
-          onError={() => {
-            setLoading(false);
-            setError(true);
-          }}
-        />
-      ) : !loading && error ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-green-50 text-green-900/30 p-8 text-center">
-          <div className="text-6xl mb-4 opacity-20">🌿</div>
-          <p className="text-lg font-black uppercase tracking-tighter opacity-40">{hungarianName}</p>
-          <p className="text-xs italic mt-2 opacity-30">A fotó jelenleg nem elérhető.</p>
-        </div>
-      ) : null}
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={hungarianName}
+            className={`w-full h-full object-cover cursor-pointer hover:scale-105 transition-all duration-700 ${loading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'}`}
+            onLoad={() => setLoading(false)}
+            onError={() => {
+              setLoading(false);
+              setError(true);
+            }}
+            onClick={() => setIsZoomed(true)}
+            title="Nagyításhoz kattints a képre"
+          />
+        ) : !loading && error ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-green-50 text-green-900/30 p-8 text-center">
+            <div className="text-6xl mb-4 opacity-20">🌿</div>
+            <p className="text-lg font-black uppercase tracking-tighter opacity-40">{hungarianName}</p>
+            <p className="text-xs italic mt-2 opacity-30">A fotó jelenleg nem elérhető.</p>
+          </div>
+        ) : null}
 
-      {!loading && imageUrl && (
-        <div className="absolute bottom-3 right-3 bg-black/20 backdrop-blur-md text-[10px] text-white px-2 py-1 rounded-md opacity-50 hover:opacity-100 transition-opacity">
-          {isLocal ? 'Saját fotó' : 'Wikipedia / Commons'}
-        </div>
+        {!loading && imageUrl && (
+          <div className="absolute bottom-3 right-3 bg-black/20 backdrop-blur-md text-[10px] text-white px-2 py-1 rounded-md opacity-50 hover:opacity-100 transition-opacity pointer-events-none">
+            {isLocal ? 'Saját fotó' : 'Wikipedia / Commons'}
+          </div>
+        )}
+      </div>
+
+      {/* Zoom Modal (React Portal segítségével, hogy mindig legfelül legyen) */}
+      {isZoomed && imageUrl && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4 cursor-zoom-out animate-fade-in backdrop-blur-sm"
+          onClick={() => setIsZoomed(false)}
+        >
+          <div className="absolute top-6 right-6 bg-white/10 text-white w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/30 transition-colors cursor-pointer backdrop-blur-md text-xl">
+            ✕
+          </div>
+          
+          <img 
+            src={imageUrl} 
+            alt={hungarianName} 
+            className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
+          />
+          
+          <div className="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
+            <div className="inline-block bg-black/50 backdrop-blur-md px-6 py-3 rounded-2xl">
+              <h3 className="text-white text-2xl font-black tracking-wide">{hungarianName}</h3>
+              <p className="text-white/70 italic mt-1">{latinName}</p>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 };
 
 export default PlantImage;
+
