@@ -20,6 +20,15 @@ interface Submission {
   score: number | null;
 }
 
+interface Feedback {
+  id: string;
+  created_at: string;
+  name: string;
+  group_name?: string;
+  rating: number;
+  comments: string;
+}
+
 const TeacherPanel: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -28,6 +37,9 @@ const TeacherPanel: React.FC = () => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [gradingAnswers, setGradingAnswers] = useState<Answer[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>('all');
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [activeTab, setActiveTab] = useState<'submissions' | 'feedbacks'>('submissions');
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
 
   const getFormattedDay = (dateStr: string) => {
     try {
@@ -56,9 +68,28 @@ const TeacherPanel: React.FC = () => {
     setLoading(false);
   };
 
+  const fetchFeedbacks = async () => {
+    setFeedbackLoading(true);
+    const { data, error } = await supabase
+      .from('feedbacks')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setFeedbacks(data);
+    } else {
+      console.warn("Could not fetch feedbacks:", error);
+    }
+    setFeedbackLoading(false);
+  };
+
+  const fetchAllData = async () => {
+    await Promise.all([fetchSubmissions(), fetchFeedbacks()]);
+  };
+
   useEffect(() => {
     if (isAuthorized) {
-      fetchSubmissions();
+      fetchAllData();
     }
   }, [isAuthorized]);
 
@@ -110,7 +141,7 @@ const TeacherPanel: React.FC = () => {
 
     if (!error) {
       alert('Pontszám sikeresen elmentve!');
-      fetchSubmissions();
+      fetchAllData();
       setSelectedSubmission(null);
     } else {
       alert('Hiba történt a mentés során!');
@@ -162,32 +193,40 @@ const TeacherPanel: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-8 pb-20">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      {/* Portál Fejléc */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-800">Beérkezett Vizsgák</h2>
-          <p className="text-sm text-slate-500 mt-1">Összesen {filteredSubmissions.length} vizsga megjelenítve</p>
+          <h2 className="text-3xl font-black text-slate-800">Tanári Felület</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            {activeTab === 'submissions' 
+              ? `Beérkezett vizsgák kezelése (${filteredSubmissions.length} db)` 
+              : `Beérkezett visszajelzések értékelése (${feedbacks.length} db)`
+            }
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Csoport szűrő dropdown */}
-          <div className="flex items-center bg-white rounded-xl shadow-sm border border-slate-200 px-3 py-2">
-            <span className="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider">Csoport:</span>
-            <select
-              value={selectedGroup}
-              onChange={(e) => setSelectedGroup(e.target.value)}
-              className="bg-transparent text-sm font-bold text-slate-700 outline-none border-none pr-4 cursor-pointer focus:ring-0"
-            >
-              <option value="all">Minden csoport ({submissions.length})</option>
-              {groups.map(g => (
-                <option key={g} value={g}>
-                  {g} ({submissions.filter(s => (s.group_name || 'Nincs megadva') === g).length})
-                </option>
-              ))}
-            </select>
-          </div>
+          {activeTab === 'submissions' && (
+            /* Csoport szűrő dropdown */
+            <div className="flex items-center bg-white rounded-xl shadow-sm border border-slate-200 px-3 py-2 animate-fade-in">
+              <span className="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider">Csoport:</span>
+              <select
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+                className="bg-transparent text-sm font-bold text-slate-700 outline-none border-none pr-4 cursor-pointer focus:ring-0"
+              >
+                <option value="all">Minden csoport ({submissions.length})</option>
+                {groups.map(g => (
+                  <option key={g} value={g}>
+                    {g} ({submissions.filter(s => (s.group_name || 'Nincs megadva') === g).length})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <button 
-            onClick={fetchSubmissions}
-            className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 flex items-center justify-center text-lg active:scale-95"
+            onClick={fetchAllData}
+            className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 flex items-center justify-center text-lg active:scale-95 cursor-pointer"
             title="Frissítés"
           >
             🔄
@@ -195,66 +234,137 @@ const TeacherPanel: React.FC = () => {
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center p-20">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-        </div>
-      ) : filteredSubmissions.length === 0 ? (
-        <div className="text-center p-20 glass-panel opacity-50">
-          <p className="text-xl font-bold text-slate-400">Nincs beküldött vizsga ebben a szűrésben.</p>
-        </div>
-      ) : (
-        <div className="space-y-10">
-          {Object.keys(groupedSubmissions).map((day) => (
-            <div key={day} className="space-y-4">
-              {/* Dátum Csoport Fejléc */}
-              <div className="flex items-center gap-3 px-1 animate-fade-in">
-                <span className="w-2.5 h-2.5 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
-                <h3 className="text-lg font-black text-slate-700 uppercase tracking-wider">{day}</h3>
-                <span className="text-xs font-bold text-slate-400 bg-slate-200/60 px-2 py-0.5 rounded-full">
-                  {groupedSubmissions[day].length} db
-                </span>
-                <div className="flex-1 h-px bg-slate-200/80"></div>
-              </div>
+      {/* Navigációs Tabok */}
+      <div className="flex border-b border-slate-200/80 mb-8 gap-6">
+        <button
+          onClick={() => setActiveTab('submissions')}
+          className={`pb-4 text-base font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'submissions'
+              ? 'border-green-600 text-green-700'
+              : 'border-transparent text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <span>📝</span> Vizsgák ({submissions.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('feedbacks')}
+          className={`pb-4 text-base font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'feedbacks'
+              ? 'border-green-600 text-green-700'
+              : 'border-transparent text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <span>💬</span> Visszajelzések ({feedbacks.length})
+        </button>
+      </div>
 
-              <div className="grid gap-4">
-                {groupedSubmissions[day].map((s) => (
-                  <div 
-                    key={s.id} 
-                    onClick={() => handleOpenSubmission(s)}
-                    className="glass-panel p-6 cursor-pointer hover:border-blue-300 transition-all flex justify-between items-center group animate-slide-up"
-                  >
+      {activeTab === 'feedbacks' ? (
+        feedbackLoading ? (
+          <div className="flex justify-center p-20">
+            <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+          </div>
+        ) : feedbacks.length === 0 ? (
+          <div className="text-center p-20 glass-panel opacity-50 animate-fade-in">
+            <p className="text-xl font-bold text-slate-400">Még nem érkezett visszajelzés.</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 animate-fade-in">
+            {feedbacks.map((f) => (
+              <div key={f.id} className="glass-panel p-6 flex flex-col justify-between hover:border-green-200 transition-all">
+                <div>
+                  <div className="flex items-start justify-between gap-4 mb-3">
                     <div>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <h4 className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                          {s.student_name}
-                        </h4>
-                        <span className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full border border-slate-200/60">
-                          {s.group_name || 'Nincs megadva'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-2 font-medium">
-                        Óra: {new Date(s.created_at).toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
+                      <h4 className="text-lg font-bold text-slate-800">{f.name || 'Névtelen'}</h4>
+                      <span className="inline-block mt-1 bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-200/60">
+                        {f.group_name || 'Nincs megadva'}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      {s.status === 'graded' ? (
-                        <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full border border-green-200">
-                          JAVÍTVA: {s.score} pont
-                        </span>
-                      ) : (
-                        <span className="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full border border-amber-200">
-                          JAVÍTÁSRA VÁR
-                        </span>
-                      )}
-                      <span className="text-slate-300 group-hover:translate-x-1 transition-transform">→</span>
+                    <div className="flex gap-0.5 text-lg">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <span key={idx}>{idx < f.rating ? '⭐' : '☆'}</span>
+                      ))}
                     </div>
                   </div>
-                ))}
+                  <p className="text-sm text-slate-600 font-medium italic mt-4 bg-slate-50 p-4 rounded-xl border border-slate-100 leading-relaxed whitespace-pre-wrap">
+                    "{f.comments}"
+                  </p>
+                </div>
+                <div className="text-[10px] text-slate-400 mt-4 font-bold text-right">
+                  {new Date(f.created_at).toLocaleString('hu-HU', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
+      ) : (
+        /* Submissions View */
+        loading ? (
+          <div className="flex justify-center p-20">
+            <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+          </div>
+        ) : filteredSubmissions.length === 0 ? (
+          <div className="text-center p-20 glass-panel opacity-50">
+            <p className="text-xl font-bold text-slate-400">Nincs beküldött vizsga ebben a szűrésben.</p>
+          </div>
+        ) : (
+          <div className="space-y-10">
+            {Object.keys(groupedSubmissions).map((day) => (
+              <div key={day} className="space-y-4">
+                {/* Dátum Csoport Fejléc */}
+                <div className="flex items-center gap-3 px-1 animate-fade-in">
+                  <span className="w-2.5 h-2.5 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
+                  <h3 className="text-lg font-black text-slate-700 uppercase tracking-wider">{day}</h3>
+                  <span className="text-xs font-bold text-slate-400 bg-slate-200/60 px-2 py-0.5 rounded-full">
+                    {groupedSubmissions[day].length} db
+                  </span>
+                  <div className="flex-1 h-px bg-slate-200/80"></div>
+                </div>
+
+                <div className="grid gap-4">
+                  {groupedSubmissions[day].map((s) => (
+                    <div 
+                      key={s.id} 
+                      onClick={() => handleOpenSubmission(s)}
+                      className="glass-panel p-6 cursor-pointer hover:border-blue-300 transition-all flex justify-between items-center group animate-slide-up"
+                    >
+                      <div>
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h4 className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                            {s.student_name}
+                          </h4>
+                          <span className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full border border-slate-200/60">
+                            {s.group_name || 'Nincs megadva'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-2 font-medium">
+                          Óra: {new Date(s.created_at).toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        {s.status === 'graded' ? (
+                          <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full border border-green-200">
+                            JAVÍTVA: {s.score} pont
+                          </span>
+                        ) : (
+                          <span className="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full border border-amber-200">
+                            JAVÍTÁSRA VÁR
+                          </span>
+                        )}
+                        <span className="text-slate-300 group-hover:translate-x-1 transition-transform">→</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* Részletek Modal */}
