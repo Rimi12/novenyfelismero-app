@@ -165,6 +165,7 @@ const Quiz: React.FC<QuizProps> = ({ source }) => {
           latinName={currentQuestion.correctPlant.latinName} 
           hungarianName={currentQuestion.correctPlant.hungarianName} 
           source={source}
+          hideLabel={true}
         />
         
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">

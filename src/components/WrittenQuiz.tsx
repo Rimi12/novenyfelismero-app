@@ -17,6 +17,7 @@ interface Question {
 
 const WrittenQuiz: React.FC = () => {
   const [studentName, setStudentName] = useState('');
+  const [groupName, setGroupName] = useState('');
   const [isStarted, setIsStarted] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -87,6 +88,7 @@ const WrittenQuiz: React.FC = () => {
       const { error } = await supabase.from('submissions').insert([
         {
           student_name: studentName,
+          group_name: groupName || 'Nincs megadva',
           answers: finalQuestions.map(q => ({
             plant_id: q.plant.id,
             plant_name: q.plant.hungarianName,
@@ -111,21 +113,40 @@ const WrittenQuiz: React.FC = () => {
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">✍️</div>
           <h2 className="text-2xl font-bold text-slate-800">Írásbeli Vizsga</h2>
-          <p className="text-slate-500 mt-2">Kérlek add meg a nevedet a kezdéshez!</p>
+          <p className="text-slate-500 mt-2">Kérlek add meg az adataidat a kezdéshez!</p>
         </div>
         
-        <input
-          type="text"
-          placeholder="Teljes neved..."
-          value={studentName}
-          onChange={(e) => setStudentName(e.target.value)}
-          className="w-full p-4 rounded-xl border-2 border-slate-100 focus:border-blue-500 outline-none transition-all mb-6 text-lg font-medium"
-        />
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Teljes név:</label>
+            <input
+              type="text"
+              placeholder="Példa: Kovács János..."
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              className="w-full p-4 rounded-xl border-2 border-slate-100 focus:border-blue-500 outline-none transition-all text-lg font-medium"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Osztály / Csoport:</label>
+            <input
+              type="text"
+              placeholder="Példa: 10.A, Kertész 1..."
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              className="w-full p-4 rounded-xl border-2 border-slate-100 focus:border-blue-500 outline-none transition-all text-lg font-medium"
+            />
+          </div>
+        </div>
 
         <button
           onClick={() => {
             if (studentName.trim().length < 3) {
-              alert('Kérlek adj meg egy érvényes nevet!');
+              alert('Kérlek adj meg egy érvényes nevet (legalább 3 karakter)!');
+              return;
+            }
+            if (groupName.trim().length < 2) {
+              alert('Kérlek add meg a csoportod vagy osztályod nevét (legalább 2 karakter)!');
               return;
             }
             setupQuiz();
@@ -166,7 +187,7 @@ const WrittenQuiz: React.FC = () => {
     <div className="max-w-2xl mx-auto px-4 mt-8 pb-10">
       <div className="flex justify-between items-center mb-4">
         <span className="text-slate-600 font-bold bg-white/80 px-4 py-2 rounded-full text-sm border border-slate-100 shadow-sm">
-           Tanuló: {studentName}
+           Tanuló: {studentName} ({groupName})
         </span>
         <span className="text-blue-600 font-bold bg-white/80 px-4 py-2 rounded-full text-sm border border-blue-100 shadow-sm">
            {currentIndex + 1} / {questions.length}
@@ -185,6 +206,7 @@ const WrittenQuiz: React.FC = () => {
           latinName={currentQuestion.plant.latinName} 
           hungarianName={currentQuestion.plant.hungarianName} 
           source="local" 
+          hideLabel={true}
         />
 
         <div className="mt-8">

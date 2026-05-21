@@ -5,6 +5,7 @@ interface PlantImageProps {
   latinName: string;
   hungarianName: string;
   source: 'wiki' | 'local';
+  hideLabel?: boolean;
 }
 
 const normalizeName = (name: string) => {
@@ -16,7 +17,7 @@ const normalizeName = (name: string) => {
     .replace(/[^a-z0-9-]/g, "");
 };
 
-const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, source }) => {
+const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, source, hideLabel = false }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -114,7 +115,7 @@ const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, sourc
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt={hungarianName}
+            alt={hideLabel ? "Növény" : hungarianName}
             className={`w-full h-full object-cover cursor-pointer hover:scale-105 transition-all duration-700 ${loading ? 'scale-110 blur-xl opacity-0' : 'scale-100 blur-0 opacity-100'}`}
             onLoad={() => setLoading(false)}
             onError={() => {
@@ -127,7 +128,7 @@ const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, sourc
         ) : !loading && error ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-green-50 text-green-900/30 p-8 text-center">
             <div className="text-6xl mb-4 opacity-20">🌿</div>
-            <p className="text-lg font-black uppercase tracking-tighter opacity-40">{hungarianName}</p>
+            <p className="text-lg font-black uppercase tracking-tighter opacity-40">{hideLabel ? "Kérdéses növény" : hungarianName}</p>
             <p className="text-xs italic mt-2 opacity-30">A fotó jelenleg nem elérhető.</p>
           </div>
         ) : null}
@@ -151,7 +152,7 @@ const PlantImage: React.FC<PlantImageProps> = ({ latinName, hungarianName, sourc
           
           <img 
             src={imageUrl} 
-            alt={hungarianName} 
+            alt={hideLabel ? "Növény" : hungarianName} 
             className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
           />
         </div>,

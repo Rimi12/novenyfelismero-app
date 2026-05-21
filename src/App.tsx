@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Quiz from './components/Quiz';
 import WrittenQuiz from './components/WrittenQuiz';
 import TeacherPanel from './components/TeacherPanel';
+import FeedbackForm from './components/FeedbackForm';
 
 type AppMode = 'selection' | 'quiz' | 'written' | 'teacher';
 
@@ -110,10 +111,63 @@ function App() {
               </button>
             </div>
 
+            {/* Használati Útmutató és Visszajelzés szekciók */}
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
+              
+              {/* Használati Útmutató */}
+              <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 flex flex-col justify-between animate-slide-up">
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-3xl">📖</span>
+                    <h3 className="text-2xl font-bold text-slate-800">Használati Útmutató</h3>
+                  </div>
+                  
+                  <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
+                    <div className="flex gap-3">
+                      <span className="text-green-600 font-bold shrink-0">1.</span>
+                      <p>
+                        <strong>Gyakorló Mód:</strong> Ismerkedj a növényekkel! A program a Wikipédiáról és Wikimedia Commonsról keres hiteles képeket, és feleletválasztós tesztekkel segít rögzíteni a neveket.
+                      </p>
+                    </div>
+                    <div className="flex gap-3">
+                      <span className="text-green-600 font-bold shrink-0">2.</span>
+                      <p>
+                        <strong>Vizsga Mód:</strong> Teszteld a tudásod a kötelező növények valós fotóival! A kérdéssorok arányosan sorsolják az egyéveseket, évelőket, fás szárúakat és gyomokat a tantervi követelményeknek megfelelően.
+                      </p>
+                    </div>
+                    <div className="flex gap-3">
+                      <span className="text-green-600 font-bold shrink-0">3.</span>
+                      <p>
+                        <strong>Írásbeli Vizsga:</strong> Hivatalos gépelős vizsga. Add meg a <em>neved</em> és <em>osztályod / csoportod</em>, majd gépeld be a növények nevét. A válaszaid az adatbázisba kerülnek, ahol a tanár fogja azokat kijavítani.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-slate-100/80 bg-slate-50/50 -mx-8 -mb-8 p-6 rounded-b-3xl">
+                  <p className="text-xs text-slate-500 font-medium">
+                    👨‍🏫 <strong>Tanári hozzáférésért</strong>, jelszó módosításért vagy adminisztrátori jogosultságért kérjük, érdeklődjön az alábbi e-mail címen:
+                  </p>
+                  <a 
+                    href="mailto:szaboimre@zoldmezo.hu" 
+                    className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-extrabold mt-2 hover:underline transition-all"
+                  >
+                    ✉️ szaboimre@zoldmezo.hu
+                  </a>
+                </div>
+              </div>
+
+              {/* Visszajelzés */}
+              <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 flex flex-col justify-between animate-slide-up">
+                <FeedbackForm />
+              </div>
+
+            </div>
+
             <div className="mt-16 flex flex-wrap justify-center gap-4 opacity-40">
                <button 
                 onClick={() => setMode('teacher')}
-                className="p-4 bg-white rounded-2xl shadow-sm border border-green-50 hover:opacity-100 transition-opacity"
+                className="p-4 bg-white rounded-2xl shadow-sm border border-green-50 hover:opacity-100 hover:scale-105 transition-all"
                >
                   <div className="text-2xl mb-2">👨‍🏫</div>
                   <div className="text-sm font-bold">Tanári Belépés</div>
